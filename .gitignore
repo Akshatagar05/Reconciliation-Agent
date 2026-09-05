@@ -1,0 +1,52 @@
+# --- Secrets --------------------------------------------------------------
+# .env.example (placeholder values only) is committed; a real .env never is.
+.env
+.env.*
+!.env.example
+
+# --- Generated datasets / evaluation output (ARCHITECTURE.md §11) ---------
+# Both regenerate byte-identically from the fixed seeds in
+# testdata/generator.py — see README.md's "Synthetic Data (Stage 2)"
+# section. Not committed so the repo never drifts from what the
+# generator actually produces.
+/data/
+/ground_truth/
+/reports/
+
+# --- Runtime state ----------------------------------------------------------
+*.db
+*.sqlite3
+*.sqlite3-journal
+recon_agent_api.db
+recon_agent_governor.db
+
+# --- Python build/test artifacts --------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Virtual environments ----------------------------------------------------
+.venv/
+venv/
+env/
+
+# --- Editor/OS cruft ----------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# --- Docker ------------------------------------------------------------------
+# Nothing Docker-specific needs excluding here — Dockerfile/docker-compose.yml
+# and their own .dockerignore are committed on purpose. (Only local override
+# files, if a contributor creates one, are excluded:)
+docker-compose.override.yml

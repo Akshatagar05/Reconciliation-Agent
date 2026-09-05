@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "recon-agent"
+version = "0.1.0"
+description = "Exception-aware multi-source settlement reconciliation agent (Razorpay AI Buildathon, Track 04)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.30,<1",
+    "pydantic>=2,<3",
+    "pandas>=2,<3",
+    "rapidfuzz>=3,<4",
+    "scipy>=1,<2",
+    "streamlit>=1,<2",
+    "python-dotenv>=1,<2",
+    "groq>=0.9,<1",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9", "httpx>=0.27,<1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

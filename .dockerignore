@@ -1,0 +1,38 @@
+# Version control / editor cruft — never useful inside the image.
+.git
+.gitignore
+.gitattributes
+.vscode
+.idea
+*.swp
+
+# Python bytecode/caches — regenerated on first import inside the image.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments — the image builds its own environment.
+.venv/
+venv/
+env/
+
+# Secrets — .env.example (placeholders only) ships; a real .env never should.
+.env
+
+# Generated data/db/report artifacts — the Dockerfile regenerates
+# data/ and ground_truth/ deterministically at build time (see the
+# "Pre-bake the calibration/evaluation datasets" step) rather than
+# trusting whatever happens to be present on the host's disk. Excluding
+# these from the build context means a stale local run, or a fresh
+# `git clone` where they don't exist at all yet, both behave identically.
+data/
+ground_truth/
+reports/
+*.db
+*.sqlite3
+
+# Docs/output not needed inside the image itself.
+/mnt/

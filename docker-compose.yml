@@ -1,0 +1,71 @@
+# One command — `docker compose up` — starts both processes, networked
+# together, per this stage's brief and ARCHITECTURE.md §14/§15's "one
+# command starts the full demo on a clean machine" acceptance gate.
+#
+# Both services build from the same image (`recon-agent:latest` — the
+# repeated `build:` block below is deduplicated by Docker Compose since
+# both resolve to the same image tag, so `docker compose up` builds it
+# exactly once, not twice).
+#
+# Networking: the dashboard needs to reach the API. Rather than editing
+# dashboard/app.py's default base URL (this stage's brief is "don't
+# touch any application logic"), the dashboard container instead runs
+# in the API container's network namespace (`network_mode: service:api`)
+# — so, from the dashboard process's point of view, the API really is
+# at `http://127.0.0.1:8000`, exactly the value already hardcoded as
+# app.py's own default, with zero source changes required. The
+# trade-off is that the dashboard's own port (8501) has to be published
+# on the `api` service instead, since a container sharing another
+# service's network namespace can't declare its own `ports:`.
+
+x-recon-agent-image: &recon-agent-image
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: recon-agent:latest
+
+services:
+  api:
+    <<: *recon-agent-image
+    container_name: recon-agent-api
+    ports:
+      - "8000:8000"   # FastAPI — interactive docs at /docs
+      - "8501:8501"   # Streamlit dashboard (see the `dashboard` service below)
+    environment:
+      # Optional — leave unset (default) to exercise the graceful
+      # LLM-degradation path §14/§15 explicitly requires and demos.
+      GROQ_API_KEY: "${GROQ_API_KEY:-}"
+      GROQ_MODEL: "${GROQ_MODEL:-meta-llama/llama-4-scout-17b-16e-instruct}"
+      # Persisted on the named volume below so reconciliation run state
+      # survives a container restart (useful for the §15 demo step that
+      # restarts the API with the Groq key removed and re-runs).
+      API_DB_PATH: /app/data-runtime/recon_agent_api.db
+      GOVERNOR_DB_PATH: /app/data-runtime/recon_agent_governor.db
+    volumes:
+      - recon-agent-dbs:/app/data-runtime
+    command: ["uvicorn", "recon_agent.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  dashboard:
+    <<: *recon-agent-image
+    container_name: recon-agent-dashboard
+    network_mode: "service:api"
+    depends_on:
+      api:
+        condition: service_healthy
+    command: >
+      streamlit run src/recon_agent/dashboard/app.py
+      --server.address 0.0.0.0
+      --server.port 8501
+      --server.headless true
+      --browser.gatherUsageStats false
+    restart: unless-stopped
+
+volumes:
+  recon-agent-dbs:
