@@ -4,7 +4,6 @@ An exception-aware multi-source settlement reconciliation agent that matches ban
 
 Built for Track 04: AI Finance Controller — Razorpay AI Buildathon 2026. See `ARCHITECTURE.md` for the full system design.
 
-> **⚠️ Before you submit — one manual step required.** The `git clone` command in the Quickstart below is still a placeholder, because this repo hasn't been pushed anywhere yet. Replace `<REPLACE_WITH_YOUR_GITHUB_URL>` with this repo's real GitHub URL once you've pushed it, and confirm the Quickstart works against that fresh URL before you submit.
 
 ## Quickstart
 
