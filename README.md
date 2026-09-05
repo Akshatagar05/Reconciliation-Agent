@@ -11,7 +11,7 @@ The fastest path from a fresh clone to a working demo — Docker is the
 only prerequisite:
 
 ```
-git clone <REPLACE_WITH_YOUR_GITHUB_URL — see the callout at the top of this README>
+git clone <https://github.com/Akshatagar05/Reconciliation-Agent/>
 cd recon-agent
 docker compose up
 ```
